@@ -14,7 +14,7 @@ TODO:
 
 ## Some known issues
 
-* Error handling is wonky, really should wrap all in try catch and add a logger.
+* Error handling is wonky, really should wrap all exception cases in try catch and add a logger.
 * There are several inefficiencies with queries
 * Should be using prepared statements everywhere
 * Should be validating input WAY better than I am
@@ -23,19 +23,5 @@ TODO:
 
 # Setup
 
-Once you have the database setup you should be able to login with the user xander.guzman@xanderguzman.com and the 
-password 'admin'
-
-## sqlite 
-
-Create a sqlite db and run the init script in scripts/db
-
-## mysql
-
-Create a sqlite db and run the init script in scripts/db. Also you'll need to modify the connection configuration 
-settings in the index.php file
-
-
-# Conclusion
-
-This isn't production ready nor would I claim it to be. With time all the issues could easily be resolved.
+Install vagrant and then while in the directory of this project execute `vagrant up` this will spin up the machine after
+a wait. You'll need to set up your host file to access it which should be on the IP address 192.168.53.18.
