@@ -4,13 +4,6 @@ This is a simple app that allows multiple users to sign up, log in, and create n
 bugs existing. Only have 8 hours to finish the project I had to cut some of my normal design ideas such as using unit 
 tests to validate my work.
 
-TODO:
-
-* Add website to user data
-* Add alert if data posted is empty and is required 
-* comments should update the page without a refresh
-* Look at the listing requirements in all their stupidity
-
 
 ## Some known issues
 
