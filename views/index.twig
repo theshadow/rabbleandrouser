@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+{% block content %}
+    <hr />
+    <div class="panel panel-default">
+        <div class="panel-heading">Recent wall posts</div>
+        <div class="media panel-body">
+            {% if posts|length > 0 %}
+                {% for post in posts %}
+                <div class="media-body">
+                    <h4 class="media-heading">{{ post.title|e }}</h4>
+                    <h5 class="media-author">by {{ post.author|e }}</h5>
+                    <p>{{ post.content|e }}</p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="media-body">
+                    <h4>No posts yet, why not sign up and add one?</h4>
+                </div>
+            {% endif %}
+        </div>
+        {% if authenticated == true %}
+            <div class="panel-footer">
+                <form action="/posts" method="POST">
+                    <div class="form-group">
+                        <label for="title">Title</label>
+                        <input type="text" class="form-control" id="title" placeholder="Title" name="title">
+                    </div>
+                    <div class="form-group">
+                        <label for="content">Message</label>
+                        <textarea class="form-control" id="content" placeholder="Post something interesting" name="content"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Post</button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

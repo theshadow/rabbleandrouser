@@ -1,0 +1,28 @@
+{
+    "name": "theshadow/rabbleandrouser",
+    "type": "application",
+    "description": "Rabble and Rouser applicant coding challenge",
+    "keywords": [],
+    "homepage": "https://github.com/theshadow/rabbleandrouser",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Xander Guzman",
+            "email": "xander.guzman@xanderguzman.com",
+            "homepage": "http://www.xanderguzman.com",
+            "role": "Applicant"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.0",
+        "silex/silex": "2.0.*@dev",
+        "twig/twig": ">=1.8,<2.0-dev",
+        "symfony/twig-bridge": "~2.3",
+        "doctrine/dbal": "2.2.*"
+    },
+    "autoload": {
+        "psr-4" : {
+            "RabbleAndRouser\\": "src/RabbleAndRouser"
+        }
+    }
+}
