@@ -53,21 +53,13 @@ $app['rabbleandrouser.wall.service'] = function () use($app) {
     return $service;
 };
 
-/**
- * GET for / which renders the posts
- */
-$app->get('/', function () use ($app) {
+// oh god this is an ugly hack I should put it somewhere else
+function retrieveAllPosts($app, $sort)
+{
     /** @var WallService $wallService */
     $wallService = $app['rabbleandrouser.wall.service'];
 
-    // this is a hack it really should be an event hook so that the system automatically populates this and doesn't
-    // have to be populated for each action that cares
-    $authenticated = false;
-    if (is_array($app['session']->get('user'))) {
-        $authenticated = true;
-    }
-
-    $posts = $wallService->retrieveAll();
+    $posts = $wallService->retrieveAll($sort);
 
     // this is a tad inefficient, should probably create a dependency between the user and post services.
     $userIds = array_reduce($posts, function ($carry, $item) {
@@ -75,6 +67,9 @@ $app->get('/', function () use ($app) {
         $carry[] = $item->getAuthorId();
         return $carry;
     }, array());
+
+    // remove any possible duplicates
+    $userIds = array_unique($userIds);
 
     // request all the users for all the posts
     $users = $app['rabbleandrouser.user.service']->retrieveUsersById($userIds);
@@ -89,18 +84,66 @@ $app->get('/', function () use ($app) {
     // reduce all of the data into a merged set of data
     $posts = array_reduce($posts, function ($carry, $post) use ($users) {
         /** @var Post $post */
+        /** @var User $user */
+        $user = $users[$post->getAuthorId()];
+
+        $addressHash = md5(strtolower(trim($user->getEmail())));
+
+        $emailLink = false;
+        $authorLink = null;
+        if (!is_null($user->getEmail())) {
+            $emailLink = true;
+            $authorLink = 'mailto:' . $user->getEmail();
+        }
+
+        if (!is_null($user->getWebsite())) {
+            $authorLink = '//' . $user->getWebsite();
+        }
+
+        $dateTime = new \DateTime("@" . $post->getCreated());
+
         $carry[] = array(
+            'created' => $dateTime->format('D, d M y H:i:s'),
             'title' => $post->getTitle(),
             'content' => $post->getContent(),
-            'author' => $users[$post->getAuthorId()]->getUsername(),
+            'author_link_is_email', $emailLink,
+            'author_link' => $authorLink,
+            'author_website' => $user->getWebsite(),
+            'author_email' => $user->getEmail(),
+            'author_gravatar_url' => '//www.gravatar.com/avatar/' . $addressHash . '?d=monsterid&s=64',
+            'author' => $user->getUsername(),
         );
 
         return $carry;
     }, array());
 
+    return $posts;
+}
+
+/**
+ * GET for / which renders the posts
+ */
+$app->get('/', function (Request $request) use ($app) {
+
+    $sort = $request->query->get('sort');
+
+    if (is_null($sort) || !in_array($sort, WallService::$VALID_SORT_VALUES)) {
+        $sort = WallService::SORT_DESC;
+    }
+
+    // this is a hack it really should be an event hook so that the system automatically populates this and doesn't
+    // have to be populated for each action that cares
+    $authenticated = false;
+    if (is_array($app['session']->get('user'))) {
+        $authenticated = true;
+    }
+
+    $posts = retrieveAllPosts($app, $sort);
+
     return $app['twig']->render('index.twig', array(
         'posts' => $posts,
         'authenticated' => $authenticated,
+        'sort' => $sort,
     ));
 });
 
@@ -143,8 +186,12 @@ $app->post('/users', function (Request $request) use ($app) {
     $username = $request->get('username');
     $password = $request->get('password');
     $email = $request->get('email');
+    $website = $request->get('website');
 
-    $valid = array_reduce(array($username, $email, $password), function ($carry, $item) {
+    $username = empty($username) ? 'Unnamed One' : $username;
+    $website = empty($website) ? null : $website;
+
+    $valid = array_reduce(array($email, $password, $website), function ($carry, $item) {
         if (empty($item)) {
             return false;
         }
@@ -159,7 +206,8 @@ $app->post('/users', function (Request $request) use ($app) {
 
     $user = new User();
     $user->setEmail($email)
-        ->setUsername($username);
+        ->setUsername($username)
+        ->setWebsite($website);
 
     $app['rabbleandrouser.user.service']->create($user, $password);
 
@@ -167,6 +215,19 @@ $app->post('/users', function (Request $request) use ($app) {
 });
 
 $app->post('/posts', function (Request $request) use($app) {
+    $acceptHeader = $request->headers->get('accept');
+    if (!is_array($acceptHeader)) {
+        $acceptHeader = array($acceptHeader);
+    }
+
+    $sort = $request->query->get('sort');
+
+    if (is_null($sort) || !in_array($sort, WallService::$VALID_SORT_VALUES)) {
+        $sort = WallService::SORT_DESC;
+    }
+
+    $isAjaxRequest = in_array('application/json', $acceptHeader);
+
     if (!is_array($app['session']->get('user')) || !isset($app['session']->get('user')['username'])) {
         return new Response('Action is forbidden, must be logged in', 403);
     }
@@ -186,7 +247,19 @@ $app->post('/posts', function (Request $request) use($app) {
 
     $app['rabbleandrouser.wall.service']->create($post);
 
-    return $app->redirect('/');
+    // this isn't an ajax request, return to the home page
+    if (!$isAjaxRequest) {
+        return $app->redirect('/');
+    }
+
+    //otherwise we're lazy bastards and just want to grab them all again to render.
+    $posts = retrieveAllPosts($app, $sort);
+
+    $response = new Response();
+    $response->headers->set('accept', array('application/json'));
+    $response->setContent(json_encode($posts));
+
+    return $response;
 });
 
 $app->run();

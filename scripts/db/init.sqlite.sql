@@ -2,6 +2,7 @@ CREATE TABLE user (
   user_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   username VARCHAR(10) NOT NULL,
   email VARCHAR(255) NOT NULL,
+  website VARCHAR(255),
   password_hash VARCHAR(128) NOT NULL
 );
 
@@ -12,11 +13,6 @@ CREATE TABLE post (
   content VARCHAR(144) NOT NULL,
   created DATETIME NOT NULL
 );
-
-ALTER TABLE post
-ADD CONSTRAINT fk_post_author_id_to_user_user_id
-FOREIGN KEY (author_id)
-REFERENCES user (user_id);
 
 INSERT INTO user (
   username,

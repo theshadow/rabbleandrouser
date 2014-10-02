@@ -31,6 +31,29 @@ class User implements HydratableInterface
     protected $email;
 
     /**
+     * @var string
+     */
+    protected $website;
+
+    /**
+     * @return string
+     */
+    public function getWebsite()
+    {
+        return $this->website;
+    }
+
+    /**
+     * @param string $website
+     * @return static
+     */
+    public function setWebsite($website)
+    {
+        $this->website = $website;
+        return $this;
+    }
+
+    /**
      * @return mixed
      */
     public function getEmail()

@@ -4,7 +4,10 @@
    Author's custom styles
    ========================================================================== */
 
-
+.form-group.required .control-label:after {
+    content:"*";
+    color:red;
+}
 
 
 

@@ -29,7 +29,8 @@ class Hydrator implements HydratorInterface
         $model->setId($data['post_id'])
             ->setAuthorId($data['author_id'])
             ->setTitle($data['title'])
-            ->setContent($data['content']);
+            ->setContent($data['content'])
+            ->setCreated($data['created']);
 
         return $model;
     }
@@ -46,6 +47,7 @@ class Hydrator implements HydratorInterface
             'author_id' => $object->getAuthorId(),
             'title' => $object->getTItle(),
             'content' => $object->getContent(),
+            'created' => $object->getCreated(),
         );
 
         return $data;

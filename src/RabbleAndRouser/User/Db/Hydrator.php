@@ -29,7 +29,8 @@ class Hydrator implements HydratorInterface
         $model = clone $object;
         $model->setId($data['user_id'])
             ->setUsername($data['username'])
-            ->setEmail($data['email']);
+            ->setEmail($data['email'])
+            ->setWebsite($data['website']);
 
         return $model;
     }
@@ -45,6 +46,7 @@ class Hydrator implements HydratorInterface
             'user_id' => $object->getId(),
             'username' => $object->getUsername(),
             'email' => $object->getEmail(),
+            'website' => $object->getWebsite(),
         );
     }
 

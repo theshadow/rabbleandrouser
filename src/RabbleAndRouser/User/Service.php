@@ -32,6 +32,7 @@ class Service implements DbAwareInterface
             'username' => $user->getUsername(),
             'email' => $user->getEmail(),
             'password_hash' => $password,
+            'website' => $user->getWebsite(),
         ));
     }
 
@@ -71,7 +72,8 @@ class Service implements DbAwareInterface
             SELECT
                 user_id,
                 username,
-                email
+                email,
+                website
             FROM
                 user
             WHERE user_id IN (?)
@@ -103,7 +105,8 @@ class Service implements DbAwareInterface
             SELECT
                 user_id,
                 username,
-                email
+                email,
+                website
             FROM
                 user
             WHERE
@@ -131,7 +134,8 @@ class Service implements DbAwareInterface
             SELECT
                 user_id,
                 username,
-                email
+                email,
+                website
             FROM
                 user
             WHERE

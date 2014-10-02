@@ -14,6 +14,14 @@ class Service implements DbAwareInterface
 {
     use DbUsingTrait;
 
+    const SORT_ASC = 'asc';
+    const SORT_DESC = 'desc';
+
+    public static $VALID_SORT_VALUES = array(
+        self::SORT_ASC,
+        self::SORT_DESC,
+    );
+
     /**
      * @param Post $post
      */
@@ -28,21 +36,27 @@ class Service implements DbAwareInterface
     }
 
     /**
+     * @param string $sort asc|desc only valid values
      * @return mixed
+     * @throws \InvalidArgumentException
      */
-    public function retrieveAll()
+    public function retrieveAll($sort = self::SORT_DESC)
     {
+        if (!in_array($sort, static::$VALID_SORT_VALUES)) {
+            throw new \InvalidArgumentException('Sort must be either asc or desc');
+        }
+
         $rows = $this->getDb()->fetchAll('
             SELECT
                 post_id,
                 author_id,
                 title,
-                content
+                content,
+                created
             FROM
                 post
             ORDER BY
-                created DESC
-        ');
+                created ' . strtoupper($sort));
 
         $rows = is_array($rows) ? $rows : array();
 
