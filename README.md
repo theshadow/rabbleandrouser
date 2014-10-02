@@ -25,3 +25,5 @@ TODO:
 
 Install vagrant and then while in the directory of this project execute `vagrant up` this will spin up the machine after
 a wait. You'll need to set up your host file to access it which should be on the IP address 192.168.53.18.
+
+Once the machine is running you'll ineed to install dependencies so execute `vagrant ssh` and then change to the `/var/www/` directory. While there you'll need to execute `composer install` and let it churn. Once it's done you should be ready to go.
