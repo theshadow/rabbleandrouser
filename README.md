@@ -23,6 +23,9 @@ TODO:
 
 # Setup
 
+Once you have the database setup you should be able to login with the user xander.guzman@xanderguzman.com and the 
+password 'admin'
+
 ## sqlite 
 
 Create a sqlite db and run the init script in scripts/db

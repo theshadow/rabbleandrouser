@@ -28,9 +28,17 @@ $app->register(new TwigServiceProvider(), array(
 
 $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
     'db.options' => array(
+        'driver'    => 'pdo_mysql',
+        'host'      => 'localhost',
+        'dbname'    => 'rabbleandrouser',
+        'user'      => 'rabbleandrouser',
+        'password'  => 'rabbleandrouser',
+        'charset'   => 'utf8',
+    ),
+    /**'db.options' => array(
         'driver'   => 'pdo_sqlite',
         'path'     => APPLICATION_PATH . '/database.db',
-    ),
+    ),*/
 ));
 
 $app->register(new Silex\Provider\SessionServiceProvider());
